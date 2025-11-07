@@ -256,7 +256,4 @@ public class PiBlockTypes {
             );
         }};
     }
-
-    public static void loadBlock() {
-    }
 }

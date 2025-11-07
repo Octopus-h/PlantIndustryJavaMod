@@ -14,9 +14,12 @@ public class EmpInterceptBulletType extends EmpBulletType {
     public void updateHoming(Bullet b){
         var target = Groups.bullet.intersect(b.x - range, b.y - range, range * 2.0f, range * 2.0f)
                 .min(tgt -> tgt.team != b.team && tgt.type.hittable, b::dst2);
+
         if(target == null){
             super.updateHoming(b);
         }
+
+
     }
 
     @Override
