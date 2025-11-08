@@ -22,11 +22,13 @@ public class EmpInterceptBulletType extends EmpBulletType {
         }
 
         // 计算子弹当前角度到目标角度的转向角度，每帧最多转动“homingPower * Time.delta * 50”度
-        b.vel.setAngle(Angles.moveToward(
-                b.rotation(), // 子弹当前角度
-                b.angleTo(target), // 子弹到目标的角度
-                this.homingPower * Time.delta * 50.0F // 每帧最大转向角度
-        ));
+        if (target != null) { // 添加非空判断
+            b.vel.setAngle(Angles.moveToward(
+                    b.rotation(),
+                    b.angleTo(target), // 只有 target 非空时才调用
+                    this.homingPower * Time.delta * 50.0F
+            ));
+        }
     }
 
     @Override
