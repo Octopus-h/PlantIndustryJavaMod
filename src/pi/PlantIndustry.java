@@ -32,4 +32,13 @@ public class PlantIndustry extends Mod{
         PiSectors.load();
         PiTechTree.Load();
     }
+
+    public static class UnitSpawn<U> {
+        public U unit;
+        public int amount;
+        public UnitSpawn(U u, int num) {
+            this.unit = u;
+            this.amount = num;
+        }
+    }
 }
