@@ -7,6 +7,7 @@ import mindustry.gen.Bullet;
 import mindustry.gen.Groups;
 
 public class EmpInterceptBulletType extends EmpBulletType {
+    public boolean homingBullet = true;
 
     public EmpInterceptBulletType() {
         super();
@@ -14,20 +15,22 @@ public class EmpInterceptBulletType extends EmpBulletType {
 
     @Override
     public void updateHoming(Bullet b){
-        var target = Groups.bullet.intersect(b.x - range, b.y - range, range * 2.0f, range * 2.0f)
-                .min(tgt -> tgt.team != b.team && tgt.type.hittable, b::dst2);
+        if(homingBullet) {
+            var target = Groups.bullet.intersect(b.x - range, b.y - range, range * 2.0f, range * 2.0f)
+                    .min(tgt -> tgt.team != b.team && tgt.type.hittable, b::dst2);
 
-        if(target == null){
-            super.updateHoming(b);
-        }
+            if (target == null) {
+                super.updateHoming(b);
+            }
 
-        // 计算子弹当前角度到目标角度的转向角度，每帧最多转动“homingPower * Time.delta * 50”度
-        if (target != null) { // 添加非空判断
-            b.vel.setAngle(Angles.moveToward(
-                    b.rotation(),
-                    b.angleTo(target), // 只有 target 非空时才调用
-                    this.homingPower * Time.delta * 50.0F
-            ));
+            // 计算子弹当前角度到目标角度的转向角度，每帧最多转动“homingPower * Time.delta * 50”度
+            if (target != null) { // 添加非空判断
+                b.vel.setAngle(Angles.moveToward(
+                        b.rotation(),
+                        b.angleTo(target), // 只有 target 非空时才调用
+                        this.homingPower * Time.delta * 50.0F
+                ));
+            }
         }
     }
 

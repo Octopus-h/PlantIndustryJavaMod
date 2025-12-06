@@ -125,6 +125,7 @@ public class PiBlockTypes {
                         healPercent = 10.8f;
 
                         // 制导属性
+                        homingBullet = false;
                         homingDelay = 25f;
                         homingPower = 0.1f;
                         homingRange = 60f;

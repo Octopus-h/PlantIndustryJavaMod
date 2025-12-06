@@ -1,6 +1,9 @@
 name: Build Mod
 
-on: [push, pull_request]
+on:
+  push:
+    tags:
+      -"test*"
 
 jobs:
   buildJar:
@@ -25,3 +28,32 @@ jobs:
         with:
           name: ${{ github.event.repository.name }}
           path: build/libs/${{ github.event.repository.name }}.jar
+      # 创建 Release（区分测试/正式）
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          # Release 标题：测试Release添加 [Test] 前缀，正式Release直接用标签名
+          tag_name: ${{ github.ref_name }}
+          release_name: ${{ startsWith(github.ref_name, 'test') && format('[Test] {0}', github.ref_name) || github.ref_name }}
+          # 测试Release标记为预发布，正式Release为正式发布
+          prerelease: ${{ startsWith(github.ref_name, 'test') }}
+          # 自动生成Release说明（可根据需求修改）
+          body: |
+            ${{ startsWith(github.ref_name, 'test') && '## 测试Release' || '## 正式Release' }}
+            - 构建时间：${{ github.event.head_commit.timestamp }}
+            - 提交信息：${{ github.event.head_commit.message }}
+
+      # 上传 JAR 到 Release Assets
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/libs/${{ github.event.repository.name }}.jar
+          # 资产名称：测试Release添加 -test 后缀，便于区分
+          asset_name: ${{ github.event.repository.name }}${{ startsWith(github.ref_name, 'test') && '-test' || '' }}.jar
+          asset_content_type: application/java-archive
